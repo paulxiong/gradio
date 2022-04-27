@@ -1,2 +1,6 @@
-numpy
 tensorflow
+ml-collections
+matplotlib
+tensorflow-datasets
+tensorflow-addons
+pycocotools
