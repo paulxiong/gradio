@@ -19,7 +19,8 @@ from tasks.visualization import vis_utils
 import gradio as gr
 
 #@title Load model.
-model_dir = '/mnt/gradio/demo/image_classifier_interpretation/model_dw/resnet_640x640/' #@param
+# model_dir = '/mnt/gradio/demo/image_classifier_interpretation/model_dw/resnet_640x640/' #@param
+model_dir = pretrained_model_dir = '/mnt/pix2seq/colabs/obj365_pretrain/resnet_640x640_b256_s400k/'
 with tf.io.gfile.GFile(os.path.join(model_dir, 'config.json'), 'r') as f:
   config = ml_collections.ConfigDict(json.loads(f.read()))
 
@@ -43,10 +44,13 @@ task = TaskObjectDetection(config)
 model = model_lib.Model(config)
 checkpoint = tf.train.Checkpoint(
     model=model, global_step=tf.Variable(0, dtype=tf.int64))
-ckpt = tf.train.latest_checkpoint(model_dir)
-# export_dir = '/mnt/pix2seq/colabs/test_model_save_output/'
-# ckpt = tf.train.latest_checkpoint(export_dir)
+# following line is the original model code
+# ckpt = tf.train.latest_checkpoint(model_dir)
+# following 2 lines is for boostx loading new model
+export_dir = '/mnt/pix2seq/colabs/model_dir'
+ckpt = tf.train.latest_checkpoint(export_dir)
 checkpoint.restore(ckpt).expect_partial()
+#checkpoint.restore(ckpt)
 global_step = checkpoint.global_step
 
 #@title Category names for COCO.
