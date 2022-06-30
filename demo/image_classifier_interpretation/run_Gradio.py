@@ -20,7 +20,8 @@ import gradio as gr
 
 #@title Load model.
 # model_dir = '/mnt/gradio/demo/image_classifier_interpretation/model_dw/resnet_640x640/' #@param
-model_dir = pretrained_model_dir = '/mnt/pix2seq/colabs/obj365_pretrain/resnet_640x640_b256_s400k/'
+# model_dir = pretrained_model_dir = '/mnt/pix2seq/colabs/obj365_pretrain/resnet_640x640_b256_s400k/'
+model_dir = pretrained_model_dir ='/mnt/pix2seq/colabs/model_dir'
 with tf.io.gfile.GFile(os.path.join(model_dir, 'config.json'), 'r') as f:
   config = ml_collections.ConfigDict(json.loads(f.read()))
 
@@ -44,13 +45,16 @@ task = TaskObjectDetection(config)
 model = model_lib.Model(config)
 checkpoint = tf.train.Checkpoint(
     model=model, global_step=tf.Variable(0, dtype=tf.int64))
+
 # following line is the original model code
 # ckpt = tf.train.latest_checkpoint(model_dir)
+# checkpoint.restore(ckpt).expect_partial()
+
 # following 2 lines is for boostx loading new model
 export_dir = '/mnt/pix2seq/colabs/model_dir'
 ckpt = tf.train.latest_checkpoint(export_dir)
 checkpoint.restore(ckpt).expect_partial()
-#checkpoint.restore(ckpt)
+
 global_step = checkpoint.global_step
 
 #@title Category names for COCO.
@@ -64,7 +68,7 @@ url = 'http://images.cocodataset.org/val2017/000000039769.jpg' #@param
 im = Image.open(requests.get(url, stream=True).raw)
 im
 
-
+# model = tf.keras.models.load_model('/mnt/pix2seq/colabs/test_mode_save_output')
 # %%
 num_instances_to_generate = 10 #@param
 min_score_thresh = 0.5 #@param
