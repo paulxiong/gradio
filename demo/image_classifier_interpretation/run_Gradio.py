@@ -47,13 +47,13 @@ checkpoint = tf.train.Checkpoint(
     model=model, global_step=tf.Variable(0, dtype=tf.int64))
 
 # following line is the original model code
-# ckpt = tf.train.latest_checkpoint(model_dir)
-# checkpoint.restore(ckpt).expect_partial()
+ckpt = tf.train.latest_checkpoint(model_dir)
+checkpoint.restore(ckpt).expect_partial()
 
 # following 2 lines is for boostx loading new model
-export_dir = '/mnt/pix2seq/colabs/model_dir'
-ckpt = tf.train.latest_checkpoint(export_dir)
-checkpoint.restore(ckpt).expect_partial()
+# export_dir = '/mnt/pix2seq/colabs/model_dir'
+# ckpt = tf.train.latest_checkpoint(export_dir)
+# checkpoint.restore(ckpt).expect_partial()
 
 global_step = checkpoint.global_step
 
