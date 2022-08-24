@@ -1,4 +1,3 @@
-# %%
 import requests
 import tensorflow as tf
 import os
@@ -6,7 +5,6 @@ import sys
 import numpy as np
 from PIL import Image
 import json
-import ast
 
 sys.path.append(os.getcwd())
 root_dir = os.getcwd()
@@ -20,14 +18,10 @@ from tasks.visualization import vis_utils
 import gradio as gr
 
 #@title Load model.
-# model_dir = '/mnt/gradio/demo/image_classifier_interpretation/model_dw/resnet_640x640/' #@param
-# model_dir = pretrained_model_dir = '/mnt/pix2seq/colabs/obj365_pretrain/resnet_640x640_b256_s400k/'
-model_dir = pretrained_model_dir ='/mnt/pix2seq/colabs/model_dir'
+model_dir = 'gs://pix2seq/coco_det_finetune/resnet_640x640/' #@param
 with tf.io.gfile.GFile(os.path.join(model_dir, 'config.json'), 'r') as f:
   config = ml_collections.ConfigDict(json.loads(f.read()))
 
-
-# %%
 # Set batch size to 1.
 config.eval.batch_size = 1
 
@@ -42,20 +36,12 @@ config.dataset.val_filename='instances_val2017.json'
 assert config.task.name == "object_detection"
 task = TaskObjectDetection(config)
 
-#Restore checkpoint.
+# Restore checkpoint.
 model = model_lib.Model(config)
 checkpoint = tf.train.Checkpoint(
     model=model, global_step=tf.Variable(0, dtype=tf.int64))
-
-# following line is the original model code
 ckpt = tf.train.latest_checkpoint(model_dir)
 checkpoint.restore(ckpt).expect_partial()
-
-# following 2 lines is for boostx loading new model
-# export_dir = '/mnt/pix2seq/colabs/model_dir'
-# ckpt = tf.train.latest_checkpoint(export_dir)
-# checkpoint.restore(ckpt).expect_partial()
-
 global_step = checkpoint.global_step
 
 #@title Category names for COCO.
@@ -63,14 +49,11 @@ categories_str = '{"categories": [{"supercategory": "person","id": 1,"name": "pe
 categories_dict = json.loads(categories_str)
 categories_dict = {c['id']: c for c in categories_dict['categories']}
 
-# %%
 url = 'http://images.cocodataset.org/val2017/000000039769.jpg' #@param
 
 im = Image.open(requests.get(url, stream=True).raw)
 im
 
-# model = tf.keras.models.load_model('/mnt/pix2seq/colabs/test_mode_save_output')
-# %%
 num_instances_to_generate = 10 #@param
 min_score_thresh = 0.5 #@param
 
@@ -112,152 +95,34 @@ infer_outputs = infer(model, preprocessed_outputs)
 _, pred_seq, _ = infer_outputs
 results = task.postprocess_tpu(*infer_outputs)
 
-# %%
-(images, _, pred_bboxes, _, pred_classes, scores, _, _, _, _, _) = results
-#print(images)
-
-# %%
-#response = requests.get("https://git.io/JJkYN")
-#labels = response.text.split("\n")
-#print(f"original:{labels}")
-#f = open("JJkYN_labes.txt", 'r')
-#labels = f.read().split("\n") 
-#print(f"local readed:{labels}")
 
 
-# %%
 
 
-#inception_net = tf.keras.applications.MobileNetV2()  # load the model
+
+
+inception_net = tf.keras.applications.MobileNetV2()  # load the model
 
 # Download human-readable labels for ImageNet.
-#response = requests.get("https://git.io/JJkYN")
-#labels = response.text.split("\n")
+response = requests.get("https://git.io/JJkYN")
+labels = response.text.split("\n")
 
 
-def classify_image(inp_img,inp_text1, inp_text2):
-    #inp = inp.reshape((-1, 224, 224, 3))
-    #inp = tf.keras.applications.mobilenet_v2.preprocess_input(inp)
-    #prediction = inception_net.predict(inp).flatten()
+def classify_image(inp):
+    inp = inp.reshape((-1, 224, 224, 3))
+    inp = tf.keras.applications.mobilenet_v2.preprocess_input(inp)
+    prediction = inception_net.predict(inp).flatten()
     # return {labels[i]: float(prediction[i]) for i in range(1000)}
-    #return 'punks.png'
-    #return tf.image.convert_image_dtype(images[0], tf.uint8).numpy()
-
-    #im = np.array(im)
-    from pascal_voc_writer import Writer
-    import datetime
-    import time
-    # breakpoint()
-    image = inp_img
-    # Image = tf.image.convert_image_dtype(inp_img, tf.float32)
-    jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
-    xml_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/Annotations/'
-    pascal_file ='boost_img_'+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
-    pascal_jpg = jpeg_path + pascal_file+'.jpg'
-    pascal_xml = xml_path + pascal_file+'.xml'
-    img = Image.fromarray(np.uint8(image)).convert('RGB')
-    img.save(pascal_jpg)
-
-    
-    dict1 = ast.literal_eval(inp_text1)
-    left, top, width,height = dict1['x'], dict1['y'], dict1['width'], dict1['height']
-    writer = Writer(pascal_jpg, width,height)
-    writer.addObject('dog', top,left,height, width)
-    # writer.addObject(pascal_file, 1,1, width, height)
-    writer.save(pascal_xml)
-
-
-
-    im = inp_img
-    features = {
-        'image': tf.image.convert_image_dtype(im, tf.float32),
-        'image/id': 0, # dummy image id.
-        'orig_image_size': tf.shape(im)[0:2],
-    }
-    labels = {
-        'label': tf.zeros([1], tf.int32),
-        'bbox': tf.zeros([1, 4]),
-        'area': tf.zeros([1]),
-        'is_crowd': tf.zeros([1]),
-    }
-    features, labels = data_utils.preprocess_eval(
-        features,
-        labels,
-        max_image_size=config.model.image_size,
-        max_instances_per_image=1)
-
-    # Batch features and labels.
-    features = {
-        k: tf.expand_dims(v, 0) for k, v in features.items()
-    }
-    labels = {
-        k: tf.expand_dims(v, 0) for k, v in labels.items()
-    }
-    # Inference.
-    preprocessed_outputs = (features['image'], None, (features, labels))
-    infer_outputs = infer(model, preprocessed_outputs)
-    _, pred_seq, _ = infer_outputs
-    results = task.postprocess_tpu(*infer_outputs)
-
-
-
-
-    
-    (images, _, pred_bboxes, _, pred_classes, scores, _, _, _, _, _) = results
-    boxes1 = pred_bboxes[0].numpy()
-    dict2 = ast.literal_eval(inp_text2)
-    width, height = dict2['width'], dict2['height']
-    # left,top = dict1['left']/width, dict1['top']/height
-    # right, bottom = (dict1['left'] + dict1['width'])/width, (dict1['top'] + dict1['height'])/height
-    left,top = dict1['x']/width, dict1['y']/height
-    right, bottom = (dict1['x'] + dict1['width'])/width, (dict1['y'] + dict1['height'])/height
-
-    breakpoint()
-    vis = vis_utils.visualize_boxes_and_labels_on_image_array(
-        image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
-        # boxes=pred_bboxes[0].numpy(),
-        # skipped the predicted boxes, instead of the annotated boxes.
-        boxes = np.array([[left,right,top, bottom]]),
-        classes=pred_classes[0].numpy(),
-        scores=scores[0].numpy(),
-        category_index=categories_dict,
-        use_normalized_coordinates=True,
-        min_score_thresh=min_score_thresh,
-        max_boxes_to_draw=100)
-    return Image.fromarray(vis)
-
+    return 'punks.png'
 
 
 image = gr.inputs.Image(shape=(224, 224))
 label = gr.outputs.Label(num_top_classes=3)
-# breakpoint()
+
 gr.Interface(
     # fn=classify_image, inputs=image, outputs=label, interpretation="default"
     fn=classify_image, 
-    inputs=
-    [
-        image,
-        # gr.Textbox(
-        #     label="Initial text",
-        #     lines=3,
-        #     value="The quick brown fox jumped over the lazy dogs.",
-        # ),
-        gr.Textbo1(
-            label="Inintial text",
-            lines=3,
-            value="he quick brown fox jumped over the lazy dogs.",
-        ),        
-        gr.Textbo2(
-            label="Text to compare",
-            lines=3,
-            value="The fast brown fox jumps over lazy dogs.",
-        ),        
-    ], 
+    inputs=image, 
     outputs="image", 
     interpretation="default"
-# ).launch(share=True)
 ).launch()
-
-
-
-

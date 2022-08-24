@@ -7,6 +7,8 @@ import InputImage from "./input/Image/config.js";
 import InputNumber from "./input/Number/config.js";
 import InputRadio from "./input/Radio/config.js";
 import InputSlider from "./input/Slider/config.js";
+import InputTextbo1 from "./input/Textbo1/config.js";
+import InputTextbo2 from "./input/Textbo2/config.js";
 import InputTextbox from "./input/Textbox/config.js";
 import InputVideo from "./input/Video/config.js";
 import InputDataFrame from "./input/DataFrame/config.js";
@@ -43,6 +45,8 @@ export const input_component_map = {
 	number: InputNumber,
 	radio: InputRadio,
 	slider: InputSlider,
+	textbo1: InputTextbo1,
+	textbo2: InputTextbo2,
 	textbox: InputTextbox,
 	timeseries: InputTimeSeries,
 	video: InputVideo,

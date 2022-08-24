@@ -1,0 +1,158 @@
+.
+├── demo
+│   ├── calculator
+│   ├── calculator_live
+│   ├── chatbot
+│   ├── diff_texts
+│   ├── digit_classifier
+│   ├── disease_report
+│   ├── filter_records
+│   ├── form_graph
+│   ├── fraud_detector
+│   ├── gender_sentence_custom_interpretation
+│   ├── gender_sentence_default_interpretation
+│   ├── generate_tone
+│   ├── gpt_j
+│   ├── hello_login
+│   ├── hello_world
+│   ├── hello_world_2
+│   ├── hello_world_3
+│   ├── Image3D
+│   │   └── files
+│   ├── image_classifier
+│   │   ├── files
+│   │   └── images
+│   ├── image_classifier_2
+│   │   └── files
+│   ├── image_classifier_2.org
+│   │   └── files
+│   ├── image_classifier_interpretation
+│   │   ├── architectures
+│   │   │   └── __pycache__
+│   │   ├── data
+│   │   │   └── __pycache__
+│   │   ├── files
+│   │   ├── flagged
+│   │   ├── gradio_my -> ../../../gradio_my
+│   │   ├── image_classifier_2
+│   │   │   └── files
+│   │   ├── images
+│   │   ├── metrics
+│   │   │   └── __pycache__
+│   │   ├── models
+│   │   │   └── __pycache__
+│   │   ├── __pycache__
+│   │   ├── tasks
+│   │   │   ├── __pycache__
+│   │   │   └── visualization
+│   │   │       └── __pycache__
+│   │   └── tmp
+│   ├── image_mod
+│   ├── kitchen_sink
+│   │   └── files
+│   ├── longest_word
+│   ├── main_note
+│   │   └── audio
+│   ├── matrix_transpose
+│   ├── outbreak_forecast
+│   ├── question_answer
+│   │   └── files
+│   ├── reverse_audio
+│   │   └── audio
+│   ├── sales_projections
+│   ├── sentence_builder
+│   ├── sentiment_analysis
+│   ├── sepia_filter
+│   ├── spectogram
+│   ├── stock_forecast
+│   ├── streaming_stt
+│   ├── streaming_wav2vec
+│   ├── tax_calculator
+│   ├── text_analysis
+│   ├── titanic_survival
+│   │   └── files
+│   ├── video_flip
+│   ├── webcam
+│   ├── xray_blocks
+│   ├── zip_to_json
+│   └── zip_two_files
+│       └── files
+├── gradio.egg-info
+├── gradio_my
+│   └── templates
+├── guides
+├── scripts
+├── test
+│   ├── golden
+│   │   ├── diff_texts
+│   │   ├── image_mod
+│   │   ├── longest_word
+│   │   └── sentence_builder
+│   ├── test_data
+│   │   ├── flagged_no_log
+│   │   └── flagged_with_log
+│   ├── test_files
+│   └── tmp
+├── ui
+│   └── packages
+│       ├── app
+│       │   ├── public
+│       │   │   └── static
+│       │   │       └── img
+│       │   └── src
+│       │       ├── components
+│       │       │   ├── input
+│       │       │   │   ├── Audio
+│       │       │   │   ├── Checkbox
+│       │       │   │   ├── CheckboxGroup
+│       │       │   │   ├── DataFrame
+│       │       │   │   ├── Dropdown
+│       │       │   │   ├── File
+│       │       │   │   ├── Image
+│       │       │   │   ├── Image3D
+│       │       │   │   ├── Number
+│       │       │   │   ├── Radio
+│       │       │   │   ├── Slider
+│       │       │   │   ├── Textbox
+│       │       │   │   ├── TimeSeries
+│       │       │   │   └── Video
+│       │       │   ├── output
+│       │       │   │   ├── Audio
+│       │       │   │   ├── Carousel
+│       │       │   │   ├── Chatbot
+│       │       │   │   ├── Dataframe
+│       │       │   │   ├── File
+│       │       │   │   ├── HighlightedText
+│       │       │   │   ├── Html
+│       │       │   │   ├── Image
+│       │       │   │   ├── Image3D
+│       │       │   │   ├── Json
+│       │       │   │   ├── Label
+│       │       │   │   ├── Plot
+│       │       │   │   ├── Textbox
+│       │       │   │   ├── TimeSeries
+│       │       │   │   └── Video
+│       │       │   ├── static
+│       │       │   │   ├── Button
+│       │       │   │   └── Markdown
+│       │       │   └── utils
+│       │       ├── lang
+│       │       ├── page_layouts
+│       │       └── themes
+│       └── components
+└── website
+    ├── demos
+    ├── homepage
+    │   └── src
+    │       ├── assets
+    │       │   └── img
+    │       │       ├── guides
+    │       │       │   ├── adding_rich_descriptions_to_your_demo
+    │       │       │   ├── using_flagging
+    │       │       │   └── using_the_api_docs
+    │       │       ├── logos
+    │       │       └── twitter
+    │       └── other_templates
+    └── upload_notebooks
+
+155 directories

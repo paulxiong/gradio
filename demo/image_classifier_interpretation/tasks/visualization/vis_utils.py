@@ -50,6 +50,7 @@ from six.moves import range
 from six.moves import zip
 import tensorflow.compat.v1 as tf
 
+
 _TITLE_LEFT_MARGIN = 10
 _TITLE_TOP_MARGIN = 10
 STANDARD_COLORS = [
@@ -171,6 +172,8 @@ def draw_bounding_box_on_image_array(image,
       absolute.
   """
   image_pil = Image.fromarray(np.uint8(image)).convert('RGB')
+  image_pil.save('boost_img3.png')
+
   draw_bounding_box_on_image(image_pil, ymin, xmin, ymax, xmax, color,
                              thickness, display_str_list,
                              use_normalized_coordinates)
@@ -210,6 +213,7 @@ def draw_bounding_box_on_image(image,
       ymax, xmax as relative to the image.  Otherwise treat coordinates as
       absolute.
   """
+  image.save('boost_img1.png')
   draw = ImageDraw.Draw(image)
   im_width, im_height = image.size
   if use_normalized_coordinates:
@@ -298,6 +302,8 @@ def draw_bounding_boxes_on_image(image,
   Raises:
     ValueError: if boxes is not a [N, 4] array
   """
+  image.save('boost_img2.png')
+  breakpoint()
   boxes_shape = boxes.shape
   if not boxes_shape:
     return
@@ -900,6 +906,21 @@ def visualize_boxes_and_labels_on_image_array(
         else:
           box_to_color_map[box] = STANDARD_COLORS[classes[i] %
                                                   len(STANDARD_COLORS)]
+  from pascal_voc_writer import Writer
+  import datetime
+  import time
+  # breakpoint()
+  jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
+  xml_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/Annotations/'
+  pascal_file ='boost_img_'+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+  pascal_jpg = jpeg_path + pascal_file+'.jpg'
+  pascal_xml = xml_path + pascal_file+'.xml'
+  img = Image.fromarray(np.uint8(image)).convert('RGB')
+  # img.save(pascal_jpg)
+  width,height = img.size
+  writer = Writer(pascal_jpg, width,height)
+  writer.addObject('dog', 1,1, width, height)
+  # writer.save(pascal_xml)
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():

@@ -92,6 +92,7 @@
 	};
 
 	const submit = async () => {
+		// console.log("boostx debug submit");
 		if (state === "PENDING") {
 			return;
 		}

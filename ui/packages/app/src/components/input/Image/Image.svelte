@@ -37,6 +37,7 @@
 </script>
 
 <div class="input-image">
+	<p boostx input image/>
 	<div
 		class="image-preview w-full h-60 flex justify-center items-center dark:bg-gray-600 relative"
 		class:bg-gray-200={value}
@@ -73,7 +74,10 @@
 				/>
 			{/if}
 		{:else if tool === "select"}
-			<Cropper image={value} on:crop={({ detail }) => setValue(detail)} />
+			<p boostx  on:crop_xy={alert("boostx, on:crop_xy")} />
+			<Cropper image={value} on:crop_xy={({ detail }) => setValue(detail)} />
+			<!-- <p boostx on:crop_xy={({ detail }) => setValue(<details>)} /> -->
+
 		{:else if tool === "editor"}
 			{#if mode === "edit"}
 				<ImageEditor
