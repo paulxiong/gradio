@@ -912,7 +912,7 @@ def visualize_boxes_and_labels_on_image_array(
   # breakpoint()
   jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
   xml_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/Annotations/'
-  pascal_file ='boost_img_'+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+  pascal_file ='boost_img_vis'+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
   pascal_jpg = jpeg_path + pascal_file+'.jpg'
   pascal_xml = xml_path + pascal_file+'.xml'
   img = Image.fromarray(np.uint8(image)).convert('RGB')

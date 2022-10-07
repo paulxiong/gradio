@@ -147,7 +147,6 @@ def classify_image(inp_img,inp_text1, inp_text2):
     from pascal_voc_writer import Writer
     import datetime
     import time
-    # breakpoint()
     image = inp_img
     # Image = tf.image.convert_image_dtype(inp_img, tf.float32)
     jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
@@ -159,10 +158,17 @@ def classify_image(inp_img,inp_text1, inp_text2):
     img.save(pascal_jpg)
 
     
+    # breakpoint()
     dict1 = ast.literal_eval(inp_text1)
-    left, top, width,height = dict1['x'], dict1['y'], dict1['width'], dict1['height']
-    writer = Writer(pascal_jpg, width,height)
-    writer.addObject('dog', top,left,height, width)
+    dict2 = ast.literal_eval(inp_text2)
+    crop_x,crop_y,crop_w,crop_h=dict2['x'],dict2['y'], dict2['width'], dict2['height']
+    canvas_x,canvas_y,canvas_w,canvas_h =dict1['x'],dict1['y'], dict1['width'], dict1['height']
+    left,top,right,bottom = (crop_x-canvas_x), (crop_y-canvas_y), (crop_x-canvas_x+crop_w), (crop_y-canvas_y+crop_h)
+    # left, top, width,height = dict1['left'], dict1['top'], dict1['width'], dict1['height']
+    # width, height = crop_w,crop_h
+    writer = Writer(pascal_jpg, canvas_w,canvas_h)
+    # writer.addObject('dog', top,left,height, width)
+    writer.addObject('dog', top,left,crop_h, crop_w)
     # writer.addObject(pascal_file, 1,1, width, height)
     writer.save(pascal_xml)
 
@@ -198,21 +204,13 @@ def classify_image(inp_img,inp_text1, inp_text2):
     infer_outputs = infer(model, preprocessed_outputs)
     _, pred_seq, _ = infer_outputs
     results = task.postprocess_tpu(*infer_outputs)
-
-
-
-
-    
     (images, _, pred_bboxes, _, pred_classes, scores, _, _, _, _, _) = results
     boxes1 = pred_bboxes[0].numpy()
-    dict2 = ast.literal_eval(inp_text2)
-    width, height = dict2['width'], dict2['height']
-    # left,top = dict1['left']/width, dict1['top']/height
-    # right, bottom = (dict1['left'] + dict1['width'])/width, (dict1['top'] + dict1['height'])/height
-    left,top = dict1['x']/width, dict1['y']/height
-    right, bottom = (dict1['x'] + dict1['width'])/width, (dict1['y'] + dict1['height'])/height
+    left,top,right,bottom = (crop_x-canvas_x)/canvas_w, (crop_y-canvas_y)/canvas_h, (crop_x-canvas_x+crop_w)/canvas_w, (crop_y-canvas_y+crop_h)/canvas_h
+    # left,top = dict1['x']/width, dict1['y']/height
+    # right, bottom = (dict1['x'] + dict1['width'])/width, (dict1['y'] + dict1['height'])/height
 
-    breakpoint()
+    # breakpoint()
     vis = vis_utils.visualize_boxes_and_labels_on_image_array(
         image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
         # boxes=pred_bboxes[0].numpy(),
