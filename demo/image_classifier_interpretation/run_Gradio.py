@@ -135,7 +135,7 @@ results = task.postprocess_tpu(*infer_outputs)
 #labels = response.text.split("\n")
 
 
-def classify_image(inp_img,inp_text1, inp_text2):
+def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
     #inp = inp.reshape((-1, 224, 224, 3))
     #inp = tf.keras.applications.mobilenet_v2.preprocess_input(inp)
     #prediction = inception_net.predict(inp).flatten()
@@ -148,6 +148,8 @@ def classify_image(inp_img,inp_text1, inp_text2):
     import datetime
     import time
     image = inp_img
+    image_debug = inp_img
+    inp_img, inp_img1=inp_img1, inp_img
     # Image = tf.image.convert_image_dtype(inp_img, tf.float32)
     jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
     xml_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/Annotations/'
@@ -211,6 +213,7 @@ def classify_image(inp_img,inp_text1, inp_text2):
     # right, bottom = (dict1['x'] + dict1['width'])/width, (dict1['y'] + dict1['height'])/height
 
     # breakpoint()
+    return inp_img1
     vis = vis_utils.visualize_boxes_and_labels_on_image_array(
         image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
         # boxes=pred_bboxes[0].numpy(),
@@ -227,6 +230,7 @@ def classify_image(inp_img,inp_text1, inp_text2):
 
 
 image = gr.inputs.Image(shape=(224, 224))
+image_debug = gr.inputs.Image(shape=(224,224))
 label = gr.outputs.Label(num_top_classes=3)
 # breakpoint()
 gr.Interface(
@@ -249,9 +253,10 @@ gr.Interface(
             label="Text to compare",
             lines=3,
             value="The fast brown fox jumps over lazy dogs.",
-        ),        
+        ),
+        image_debug        
     ], 
-    outputs="image", 
+    outputs="image",
     interpretation="default"
 # ).launch(share=True)
 ).launch()
