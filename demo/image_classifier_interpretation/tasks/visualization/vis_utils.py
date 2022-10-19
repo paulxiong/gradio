@@ -303,7 +303,7 @@ def draw_bounding_boxes_on_image(image,
     ValueError: if boxes is not a [N, 4] array
   """
   image.save('boost_img2.png')
-  breakpoint()
+  # breakpoint()
   boxes_shape = boxes.shape
   if not boxes_shape:
     return

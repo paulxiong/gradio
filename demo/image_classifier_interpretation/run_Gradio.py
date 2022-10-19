@@ -213,7 +213,7 @@ def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
     # right, bottom = (dict1['x'] + dict1['width'])/width, (dict1['y'] + dict1['height'])/height
 
     # breakpoint()
-    return inp_img1
+    # return inp_img1
     vis = vis_utils.visualize_boxes_and_labels_on_image_array(
         image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
         # boxes=pred_bboxes[0].numpy(),
