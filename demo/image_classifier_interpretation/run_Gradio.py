@@ -18,6 +18,8 @@ from data import data_utils
 from tasks.object_detection import TaskObjectDetection
 from tasks.visualization import vis_utils
 import gradio as gr
+import logging
+logging.basicConfig(filename='my_app.log',level=logging.DEBUG)
 
 #@title Load model.
 # model_dir = '/mnt/gradio/demo/image_classifier_interpretation/model_dw/resnet_640x640/' #@param
@@ -135,7 +137,8 @@ results = task.postprocess_tpu(*infer_outputs)
 #labels = response.text.split("\n")
 
 
-def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
+# def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
+def classify_image(inp_img,inp_text1, inp_text2):
     #inp = inp.reshape((-1, 224, 224, 3))
     #inp = tf.keras.applications.mobilenet_v2.preprocess_input(inp)
     #prediction = inception_net.predict(inp).flatten()
@@ -149,7 +152,7 @@ def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
     import time
     image = inp_img
     image_debug = inp_img
-    inp_img, inp_img1=inp_img1, inp_img
+    # inp_img, inp_img1=inp_img1, inp_img
     # Image = tf.image.convert_image_dtype(inp_img, tf.float32)
     jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
     xml_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/Annotations/'
@@ -165,7 +168,8 @@ def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
     dict2 = ast.literal_eval(inp_text2)
     crop_x,crop_y,crop_w,crop_h=dict2['x'],dict2['y'], dict2['width'], dict2['height']
     canvas_x,canvas_y,canvas_w,canvas_h =dict1['x'],dict1['y'], dict1['width'], dict1['height']
-    left,top,right,bottom = (crop_x-canvas_x), (crop_y-canvas_y), (crop_x-canvas_x+crop_w), (crop_y-canvas_y+crop_h)
+    left,top = (crop_x-canvas_x), (crop_y-canvas_y)
+    right,bottom =  (left+crop_w), (top+crop_h)
     # left, top, width,height = dict1['left'], dict1['top'], dict1['width'], dict1['height']
     # width, height = crop_w,crop_h
     writer = Writer(pascal_jpg, canvas_w,canvas_h)
@@ -209,6 +213,8 @@ def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
     (images, _, pred_bboxes, _, pred_classes, scores, _, _, _, _, _) = results
     boxes1 = pred_bboxes[0].numpy()
     left,top,right,bottom = (crop_x-canvas_x)/canvas_w, (crop_y-canvas_y)/canvas_h, (crop_x-canvas_x+crop_w)/canvas_w, (crop_y-canvas_y+crop_h)/canvas_h
+    # left,top,right,bottom =  0,0,0.5,0.5
+    logging.info("boostx debug: left=%s  top=%s right=%s bottom=%s cropx=%s cropy=%s cropw=%s croph=%s,canvasx=%s, canvasy=%s,canvasw=%s,canvash=%s", left, top, right,bottom,crop_x,crop_y,crop_w,crop_h,canvas_x,canvas_y,canvas_w,canvas_h)
     # left,top = dict1['x']/width, dict1['y']/height
     # right, bottom = (dict1['x'] + dict1['width'])/width, (dict1['y'] + dict1['height'])/height
 
@@ -218,11 +224,12 @@ def classify_image(inp_img,inp_text1, inp_text2,inp_img1):
         image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
         # boxes=pred_bboxes[0].numpy(),
         # skipped the predicted boxes, instead of the annotated boxes.
-        boxes = np.array([[left,right,top, bottom]]),
+        boxes = np.array([[top,left,bottom,right]]),
         classes=pred_classes[0].numpy(),
         scores=scores[0].numpy(),
         category_index=categories_dict,
         use_normalized_coordinates=True,
+        # use_normalized_coordinates=False,
         min_score_thresh=min_score_thresh,
         max_boxes_to_draw=100)
     return Image.fromarray(vis)
@@ -254,7 +261,7 @@ gr.Interface(
             lines=3,
             value="The fast brown fox jumps over lazy dogs.",
         ),
-        image_debug        
+        # image_debug        
     ], 
     outputs="image",
     interpretation="default"

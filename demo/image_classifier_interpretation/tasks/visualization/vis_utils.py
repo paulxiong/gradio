@@ -49,6 +49,8 @@ import six
 from six.moves import range
 from six.moves import zip
 import tensorflow.compat.v1 as tf
+import logging
+# logging.basicConfig(filename='my_app.log',level=logging.DEBUG)
 
 
 _TITLE_LEFT_MARGIN = 10
@@ -221,6 +223,8 @@ def draw_bounding_box_on_image(image,
                                   ymin * im_height, ymax * im_height)
   else:
     (left, right, top, bottom) = (xmin, xmax, ymin, ymax)
+  logging.info("boostx xmin=%s, xmax=%s,ymin=%s,ymax=%s", xmin,xmax,ymin,ymax)
+  logging.info("boostx left=%s, right=%s, top=%s, bottom=%s",left,right,top,bottom)
   if thickness > 0:
     draw.line([(left, top), (left, bottom), (right, bottom), (right, top),
                (left, top)],
@@ -925,6 +929,7 @@ def visualize_boxes_and_labels_on_image_array(
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():
     ymin, xmin, ymax, xmax = box
+    logging.info("boostx from box:ymin=%s,xmin=%s,ymax=%s,xmax=%s",ymin,xmin,ymax,xmax)
     if instance_masks is not None:
       draw_mask_on_image_array(
           image, box_to_instance_masks_map[box], color=color)
