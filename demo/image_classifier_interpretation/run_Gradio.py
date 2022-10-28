@@ -221,7 +221,8 @@ def classify_image(inp_img,inp_text1, inp_text2):
     # breakpoint()
     # return inp_img1
     vis = vis_utils.visualize_boxes_and_labels_on_image_array(
-        image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
+        # image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
+        image=tf.image.convert_image_dtype(im,tf.uint8).numpy(),
         # boxes=pred_bboxes[0].numpy(),
         # skipped the predicted boxes, instead of the annotated boxes.
         boxes = np.array([[top,left,bottom,right]]),
