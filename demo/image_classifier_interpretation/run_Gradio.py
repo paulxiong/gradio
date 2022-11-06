@@ -162,20 +162,31 @@ def classify_image(inp_img,inp_text1, inp_text2):
     img = Image.fromarray(np.uint8(image)).convert('RGB')
     img.save(pascal_jpg)
 
-    
+    # https://www.section.io/engineering-education/understanding-pascal-voc-dataset/   object: bndbox
+    # These coordinates are represented as [xmin, ymin, xmax, ymax] where they correspond to (x, y) coordinates of top-left 
+    # and bottom-right positions of an object.
     # breakpoint()
     dict1 = ast.literal_eval(inp_text1)
     dict2 = ast.literal_eval(inp_text2)
     crop_x,crop_y,crop_w,crop_h=dict2['x'],dict2['y'], dict2['width'], dict2['height']
     canvas_x,canvas_y,canvas_w,canvas_h =dict1['x'],dict1['y'], dict1['width'], dict1['height']
-    left,top = (crop_x-canvas_x), (crop_y-canvas_y)
-    right,bottom =  (left+crop_w), (top+crop_h)
-    # left, top, width,height = dict1['left'], dict1['top'], dict1['width'], dict1['height']
-    # width, height = crop_w,crop_h
+    xmin,ymin = (crop_x-canvas_x), (crop_y-canvas_y)
+    xmax,ymax =  (xmin+crop_w), (ymin+crop_h)
+    
+    
+    # https://github.com/AndrewCarterUK/pascal-voc-writer
+    # Install
+    # pip install pascal-voc-writer
+    # Use
+    # from pascal_voc_writer import Writer
+    # # Writer(path, width, height)
+    # writer = Writer('path/to/img.jpg', 800, 400)
+    # # ::addObject(name, xmin, ymin, xmax, ymax)
+    # writer.addObject('cat', 100, 100, 200, 200)
+    # # ::save(path)
+    # writer.save('path/to/img.xml')
     writer = Writer(pascal_jpg, canvas_w,canvas_h)
-    # writer.addObject('dog', top,left,height, width)
-    writer.addObject('dog', top,left,crop_h, crop_w)
-    # writer.addObject(pascal_file, 1,1, width, height)
+    writer.addObject('dog',xmin, ymin, xmax, ymax)
     writer.save(pascal_xml)
 
 
@@ -212,7 +223,7 @@ def classify_image(inp_img,inp_text1, inp_text2):
     results = task.postprocess_tpu(*infer_outputs)
     (images, _, pred_bboxes, _, pred_classes, scores, _, _, _, _, _) = results
     boxes1 = pred_bboxes[0].numpy()
-    left,top,right,bottom = (crop_x-canvas_x)/canvas_w, (crop_y-canvas_y)/canvas_h, (crop_x-canvas_x+crop_w)/canvas_w, (crop_y-canvas_y+crop_h)/canvas_h
+    left,top,right,bottom = (crop_x-canvas_x)/canvas_w, (crop_y-canvas_y)/canvas_h, (crop_x+crop_w-canvas_x)/canvas_w, (crop_y+crop_h-canvas_y)/canvas_h
     # left,top,right,bottom =  0,0,0.5,0.5
     logging.info("boostx debug: left=%s  top=%s right=%s bottom=%s cropx=%s cropy=%s cropw=%s croph=%s,canvasx=%s, canvasy=%s,canvasw=%s,canvash=%s", left, top, right,bottom,crop_x,crop_y,crop_w,crop_h,canvas_x,canvas_y,canvas_w,canvas_h)
     # left,top = dict1['x']/width, dict1['y']/height
@@ -233,7 +244,19 @@ def classify_image(inp_img,inp_text1, inp_text2):
         # use_normalized_coordinates=False,
         min_score_thresh=min_score_thresh,
         max_boxes_to_draw=100)
-    return Image.fromarray(vis)
+    vis_predicted = vis_utils.visualize_boxes_and_labels_on_image_array(
+        image=tf.image.convert_image_dtype(images[0], tf.uint8).numpy(),
+        # image=tf.image.convert_image_dtype(im,tf.uint8).numpy(),
+        boxes=pred_bboxes[0].numpy(),
+        classes=pred_classes[0].numpy(),
+        scores=scores[0].numpy(),
+        category_index=categories_dict,
+        use_normalized_coordinates=True,
+        # use_normalized_coordinates=False,
+        min_score_thresh=min_score_thresh,
+        max_boxes_to_draw=100)
+    # return Image.fromarray(vis),
+    return [Image.fromarray(vis),Image.fromarray(vis_predicted)]
 
 
 
@@ -264,7 +287,8 @@ gr.Interface(
         ),
         # image_debug        
     ], 
-    outputs="image",
+    # outputs="image",
+    outputs=["image","image"],
     interpretation="default"
 # ).launch(share=True)
 ).launch()

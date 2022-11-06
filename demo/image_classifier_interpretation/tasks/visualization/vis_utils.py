@@ -865,10 +865,12 @@ def visualize_boxes_and_labels_on_image_array(
   box_to_track_ids_map = {}
   if not max_boxes_to_draw:
     max_boxes_to_draw = boxes.shape[0]
+  # breakpoint()
   for i in range(boxes.shape[0]):
     if max_boxes_to_draw == len(box_to_color_map):
       break
-    if scores is None or scores[i] > min_score_thresh:
+    # if scores is None or scores[i] > min_score_thresh:
+    if True:
       box = tuple(boxes[i].tolist())
       if instance_masks is not None:
         box_to_instance_masks_map[box] = instance_masks[i]
@@ -913,7 +915,6 @@ def visualize_boxes_and_labels_on_image_array(
   from pascal_voc_writer import Writer
   import datetime
   import time
-  # breakpoint()
   jpeg_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/JPEGImages/'
   xml_path = '/mnt/anno_dataset/data/tmp_test/train/VOCdevkit/VOC2012/Annotations/'
   pascal_file ='boost_img_vis'+str(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
@@ -925,6 +926,7 @@ def visualize_boxes_and_labels_on_image_array(
   writer = Writer(pascal_jpg, width,height)
   writer.addObject('dog', 1,1, width, height)
   # writer.save(pascal_xml)
+  # breakpoint()
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():
