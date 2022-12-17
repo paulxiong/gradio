@@ -24,7 +24,15 @@ logging.basicConfig(filename='my_app.log',level=logging.DEBUG)
 #@title Load model.
 # model_dir = '/mnt/gradio/demo/image_classifier_interpretation/model_dw/resnet_640x640/' #@param
 # model_dir = pretrained_model_dir = '/mnt/pix2seq/colabs/obj365_pretrain/resnet_640x640_b256_s400k/'
-model_dir = pretrained_model_dir ='/mnt/pix2seq/colabs/model_dir'
+# add reading argv[1] to define the model dir, if not, default is  /mnt/pix2seq/colabs/model_dir
+# breakpoint()
+try:
+    model_dir = sys.argv[1]
+    if model_dir[-1]=="/":
+        model_dir=model_dir[:-1]
+except IndexError:
+    model_dir = pretrained_model_dir ='/mnt/pix2seq/colabs/model_dir'
+logging.info("boostx: the model dir:%s", model_dir)
 with tf.io.gfile.GFile(os.path.join(model_dir, 'config.json'), 'r') as f:
   config = ml_collections.ConfigDict(json.loads(f.read()))
 
